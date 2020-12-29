@@ -5,7 +5,7 @@ const App = () => {
   return (
     <React.Fragment>
       <MarketingApp />;
-   <React.Fragment>
+    </React.Fragment>
   );
 };
 
