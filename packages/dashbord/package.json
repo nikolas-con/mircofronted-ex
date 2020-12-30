@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack serve --config config/webpack.dev.js",
+    "build": "rimraf dist && webpack --config config/webpack.prod.js",
+    "aws:upload": "aws s3 sync dist s3://microfronts-ex/dashboard/latest",
+    "aws:invalidation": "aws cloudfront create-invalidation --distribution-id EQLKG59O0M2BG --path \"/dashboard/latest/index.html\"",
+    "aws:run": "env-cmd -f .env.local npm run build && env-cmd -f .env.local npm run aws:upload &&  env-cmd -f .env.local npm run aws:invalidation"
   },
   "dependencies": {
     "chart.js": "^2.9.4",
@@ -20,9 +24,11 @@
     "@vue/compiler-sfc": "^3.0.2",
     "babel-loader": "^8.1.0",
     "css-loader": "^5.0.0",
+    "env-cmd": "^10.1.0",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^4.5.0",
     "node-sass": "^4.14.1",
+    "rimraf": "^3.0.2",
     "sass-loader": "^10.0.4",
     "style-loader": "^2.0.0",
     "vue-loader": "^16.0.0-beta.9",

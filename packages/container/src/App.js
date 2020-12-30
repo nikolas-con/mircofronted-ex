@@ -1,26 +1,47 @@
-import React, { lazy, Suspense, useState } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import React, { lazy, Suspense, useState, useEffect } from "react";
+import { Router, Route, Switch, Redirect } from "react-router-dom";
+import { createBrowserHistory } from "history";
 import Header from "./components/Header";
 import Progress from "./components/Progress";
+
 const MarketingLazy = lazy(() => import("./components/MarketingApp"));
-const AtuhLazy = lazy(() => import("./components/AuthApp"));
+const AuthLazy = lazy(() => import("./components/AuthApp"));
+const DashboardLazy = lazy(() => import("./components/DashboardApp"));
 
 const App = () => {
-  const [signedIn, setIsSignIn] = useState(null);
+  const [signedIn, setIsSignIn] = useState(false);
+  const history = createBrowserHistory();
+
+  useEffect(() => {
+    console.log(signedIn);
+    if (signedIn) {
+      history.push("/dashboard");
+    }
+  }, [signedIn]);
+
   return (
-    <Router>
-      <>
-        <Header signedIn={signedIn} onSignOut={() => setIsSignIn(false)} />
-        <Suspense fallback={<Progress />}>
-          <Switch>
-            <Route
-              path="/auth"
-              render={() => <AtuhLazy onSignIn={() => setIsSignIn(true)} />}
-            />
-            <Route path="/" component={MarketingLazy} />
-          </Switch>
-        </Suspense>
-      </>
+    <Router history={history}>
+      <Header signedIn={signedIn} onSignOut={() => setIsSignIn(false)} />
+      <Suspense fallback={<Progress />}>
+        <Switch>
+          <Route
+            path="/auth"
+            render={() => <AuthLazy onSignIn={() => setIsSignIn(true)} />}
+          />
+
+          <Route path="/dashboard">
+            {!signedIn && <Redirect to="/" />}
+            <DashboardLazy />
+          </Route>
+          {/* <Route
+            path="/dashboard"
+            render={() =>
+              !signedIn ? <Redirect to={AuthLazy} /> : <DashboardLazy />
+            }
+          /> */}
+          <Route path="/" component={MarketingLazy} />
+        </Switch>
+      </Suspense>
     </Router>
   );
 };
