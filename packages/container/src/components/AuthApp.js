@@ -7,7 +7,7 @@ const AuthApp = ({ onSignIn }) => {
   const history = useHistory();
   useEffect(() => {
     const { onParentNavigate } = mount(ref.current, {
-      onNavigations: ({ pathname: nextPathName }) => {
+      onNavigation: ({ pathname: nextPathName }) => {
         const { pathname } = history.location;
         pathname !== nextPathName && history.push(nextPathName);
       },

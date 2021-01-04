@@ -12,13 +12,6 @@ const App = () => {
   const [signedIn, setIsSignIn] = useState(false);
   const history = createBrowserHistory();
 
-  useEffect(() => {
-    console.log(signedIn);
-    if (signedIn) {
-      history.push("/dashboard");
-    }
-  }, [signedIn]);
-
   return (
     <Router history={history}>
       <Header signedIn={signedIn} onSignOut={() => setIsSignIn(false)} />
@@ -26,19 +19,21 @@ const App = () => {
         <Switch>
           <Route
             path="/auth"
-            render={() => <AuthLazy onSignIn={() => setIsSignIn(true)} />}
+            render={() => (
+              <AuthLazy
+                onSignIn={() => {
+                  setIsSignIn(true);
+                  history.push("/dashboard");
+                }}
+              />
+            )}
+          />
+          <Route
+            path="/dashboard"
+            render={() => (signedIn ? <DashboardLazy /> : <Redirect to="/" />)}
           />
 
-          <Route path="/dashboard">
-            {!signedIn && <Redirect to="/" />}
-            <DashboardLazy />
-          </Route>
-          {/* <Route
-            path="/dashboard"
-            render={() =>
-              !signedIn ? <Redirect to={AuthLazy} /> : <DashboardLazy />
-            }
-          /> */}
+          {/* {signedIn && <DashboardLazy />}</Route> */}
           <Route path="/" component={MarketingLazy} />
         </Switch>
       </Suspense>
